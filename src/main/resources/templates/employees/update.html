@@ -18,20 +18,8 @@
 
                 <div class="col-xl-12">
                     <div class="card">
-                        <!-- ここから追加 -->
                         <div style="background-color: rgb(222 226 230); vertical-align:center; padding:0px 16px;">パスワードは変更する場合のみ入力してください</div>
-                        <!-- ここまで追加 -->
                         <div class="card-body">
-                            <!-- ここから修正 -->
-                            <!-- <form th:action="@{/employees/add}" th:object="${employee}" th:method="post"> -->
-                                <!-- <div class="wizard wizard-success mb-4"> -->
-                                    <!-- <div class="mb-3"> -->
-                                        <!-- <label class="form-label" for="code">社員番号</label> -->
-                                        <!-- <p class="mb-1"></p> -->
-                                        <!-- <div class="col-md-7"> -->
-                                            <!-- <input class="form-control" type="text" th:field="*{code}" th:errorclass="err" id="code"> -->
-                                            <!-- <span th:errors="*{code}" class="text-danger"></span> -->
-                                            <!-- <span th:if="${codeError} neq null" th:text="${codeError}" class="text-danger"></span> -->
                             <form th:action="@{/employees/{id}/update(id=${employee.code})}" th:object="${employee}" th:method="post">
                                 <div class="wizard wizard-success mb-4">
                                     <div class="mb-3">
@@ -41,7 +29,6 @@
                                             <label class="form-label" th:text="*{code}" th:field="*{code}"></label>
                                             <input class="form-control" type="hidden" th:field="*{code}" th:errorclass="err"><!-- inputタグとth:field="*{code}"が無いとcontrollerの@ModelAttributeが効かない -->
                                             <span th:errors="*{code}" class="text-danger"></span>
-                                            <!-- ここまで修正 -->
                                         </div>
                                     </div>
                                     <div class="mb-3">
