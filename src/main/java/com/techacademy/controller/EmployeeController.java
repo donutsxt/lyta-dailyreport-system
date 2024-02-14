@@ -7,6 +7,7 @@ import java.util.regex.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -26,6 +27,8 @@ import com.techacademy.repository.EmployeeRepository;
 import com.techacademy.service.EmployeeService;
 import com.techacademy.service.UserDetail;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 
 @Controller
 @RequestMapping("employees")
@@ -33,11 +36,13 @@ public class EmployeeController {
 
     private final EmployeeService employeeService;
     private EmployeeRepository employeeRepository; //追加
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
-    public EmployeeController(EmployeeService employeeService, EmployeeRepository employeeRepository) {
+    public EmployeeController(EmployeeService employeeService, EmployeeRepository employeeRepository, PasswordEncoder passwordEncoder) {
         this.employeeService = employeeService;
         this.employeeRepository = employeeRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     // 従業員一覧画面
@@ -144,10 +149,12 @@ public class EmployeeController {
         String requestPassword = employee.getPassword();
         if ("".equals(requestPassword)) {
             // パスワードが空白だった場合
+            employee.setPassword(employeeService.findByCode(code).getPassword());
+            System.out.println("pasuword"+employee);
         } else {
             // パスワードが空白でない場合
             // パスワード桁数チェック
-            int passwordLen = employee.getPassword().length();
+            int passwordLen = requestPassword.length();
             int passwordMin = 8;
             int passwordMax = 16;
 //            System.out.println("ApasswordLen"+passwordLen);
@@ -165,6 +172,8 @@ public class EmployeeController {
             Matcher matcher = pattern.matcher(requestPassword);
             if(matcher.matches()) {
 //                System.out.println("A-Zの場合"+requestPassword);
+                employee.setPassword(passwordEncoder.encode(requestPassword));
+                System.out.println("encodepass"+employee);
                 } else {
                     model.addAttribute(ErrorMessage.getErrorName(ErrorKinds.HALFSIZE_ERROR),
                             ErrorMessage.getErrorValue(ErrorKinds.HALFSIZE_ERROR));
