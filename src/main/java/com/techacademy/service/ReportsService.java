@@ -52,16 +52,22 @@ public class ReportsService {
 
     // 日報更新
     @Transactional
-    public ErrorKinds update(Reports reports, UserDetail userDetail) {
+    public ErrorKinds update(Reports reports, UserDetail userDetail, Integer id) {
 
         // 重複チェック
         if (reports.getEmployee().getCode().equals(userDetail.getEmployee().getCode())) {
             List<Reports> reportsList = findByEmployee(userDetail.getEmployee());
-            for (Reports str : reportsList) {
-                LocalDate date1 = str.getReportDate();
-                LocalDate date2 = reports.getReportDate();
-                if(date1.equals(date2)) {
-                    return ErrorKinds.DATECHECK_ERROR;
+            for (Reports report : reportsList) {
+                LocalDate existDate = report.getReportDate();//既に存在する日付
+                LocalDate innputDate = reports.getReportDate();//入力された日付
+                LocalDate originalDate = getReport(id).getReportDate();//もともとの日付
+                if(innputDate.equals(originalDate)) {
+                    // もともとの日付と入力された日付が変わらない時はエラーにせずそのまま更新
+                } else {
+                    // 入力された日付が既に存在する日付の場合は「既に登録されている日付です」を表示
+                    if(innputDate.equals(existDate)) {
+                        return ErrorKinds.DATECHECK_ERROR;
+                    }
                 }
             }
         }
