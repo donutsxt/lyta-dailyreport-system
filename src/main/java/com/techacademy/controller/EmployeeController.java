@@ -27,8 +27,6 @@ import com.techacademy.repository.EmployeeRepository;
 import com.techacademy.service.EmployeeService;
 import com.techacademy.service.UserDetail;
 
-import org.springframework.security.crypto.password.PasswordEncoder;
-
 
 @Controller
 @RequestMapping("employees")
@@ -36,7 +34,7 @@ public class EmployeeController {
 
     private final EmployeeService employeeService;
     private EmployeeRepository employeeRepository; //追加
-    private PasswordEncoder passwordEncoder;
+    private PasswordEncoder passwordEncoder; //追加
 
     @Autowired
     public EmployeeController(EmployeeService employeeService, EmployeeRepository employeeRepository, PasswordEncoder passwordEncoder) {
@@ -138,28 +136,22 @@ public class EmployeeController {
     }
 
 
-
     /* 従業員更新処理　追加 */
     @Transactional
     @PostMapping(value = "{id}/update")
     public String postUpdate(@PathVariable("id") String code, @ModelAttribute @Validated Employee employee, BindingResult res, Model model) {
 
-
         // パスワード空白チェック
         String requestPassword = employee.getPassword();
         if ("".equals(requestPassword)) {
-            // パスワードが空白だった場合
-            employee.setPassword(employeeService.findByCode(code).getPassword());
-            System.out.println("pasuword"+employee);
+            // System.out.println("パスワードが空白だった場合"+requestPassword);
+            employee.setPassword(employeeService.findByCode(code).getPassword());// パスワード未入力の場合は以前のパスワードを引き継ぎ
         } else {
-            // パスワードが空白でない場合
+            // System.out.println("パスワードが空白でない場合"+requestPassword);
             // パスワード桁数チェック
             int passwordLen = requestPassword.length();
             int passwordMin = 8;
             int passwordMax = 16;
-//            System.out.println("ApasswordLen"+passwordLen);
-//            System.out.println("passwordMin"+passwordMin);
-//            System.out.println("passwordMax"+passwordMax);
             if(passwordLen < passwordMin || passwordLen > passwordMax) {
                 model.addAttribute(ErrorMessage.getErrorName(ErrorKinds.RANGECHECK_ERROR),
                         ErrorMessage.getErrorValue(ErrorKinds.RANGECHECK_ERROR));
@@ -172,8 +164,7 @@ public class EmployeeController {
             Matcher matcher = pattern.matcher(requestPassword);
             if(matcher.matches()) {
 //                System.out.println("A-Zの場合"+requestPassword);
-                employee.setPassword(passwordEncoder.encode(requestPassword));
-                System.out.println("encodepass"+employee);
+                employee.setPassword(passwordEncoder.encode(requestPassword));// パスワードが新しく入力された場合は暗号化
                 } else {
                     model.addAttribute(ErrorMessage.getErrorName(ErrorKinds.HALFSIZE_ERROR),
                             ErrorMessage.getErrorValue(ErrorKinds.HALFSIZE_ERROR));
@@ -181,29 +172,20 @@ public class EmployeeController {
                     return "employees/update";
                 }
         }
-//        System.out.println("if終了");
-
-
-
 
         // 入力チェック
         if (res.hasErrors()) {
             return "employees/update";
         }
 
-
+        // 保存
         LocalDateTime now = LocalDateTime.now();
         employee.setCreatedAt(employeeService.findByCode(code).getCreatedAt());
         employee.setUpdatedAt(now);
         System.out.println("employee"+employee);
         employeeRepository.save(employee);
 
-
-
         return "redirect:/employees";
     }
-
-
-
 
 }
