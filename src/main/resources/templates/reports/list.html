@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html class="h-100" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
-
 <head th:replace="common/header :: head_fragment(title=日報一覧)"></head>
-
-<body class="h-100 overflow-hidden">
+<script src="http://localhost:8080/js/list.js"></script>
+<body class="h-100"><!-- overflow-hidden">-->
     <div class="row h-100">
         <div class="h-100 p-3 mb-2 bg-dark text-white col-sm-2">
             <nav th:replace="common/side :: copy"></nav>
@@ -12,12 +11,23 @@
             <!-- コンテンツ -->
             <div class="container-fluid p-0">
                 <h1 class="h3 mb-3">日報 一覧</h1>
-
+                <!--絞り込み機能ここから-->
+                <!--<form name="search">-->
+                <div class="searcharea" style="margin:16px 0px;">
+                    <label>
+                        <input id="inputValue" type="search" placeholder="日報一覧から絞り込み" style="vertical-align:middle;">
+                    </label>
+                    <label>
+                        <input value="絞り込み" type="submit" class="btn btn-primary" onclick="search()" id="searchbutton">
+                    </label>
+                </div>
+                <!--</form>-->
+                <!--絞り込み機能ここまで-->
                 <div class="row">
                     <div class="col-xl-11">
                         <div class="card">
                             <div class="card-body">
-                                <table class="table table-striped w-100">
+                                <table class="table table-striped w-100" id="listtable">
                                     <thead>
                                         <tr>
                                             <th>氏名</th>
@@ -28,10 +38,10 @@
                                     </thead>
                                     <tbody>
                                         <tr th:each="report : ${reportList}">
-                                        <td class="align-middle" th:text="${report.employee.name}"></td>
-                                        <td class="align-middle" th:text="${report.reportDate}"></td>
-                                        <td class="align-middle" th:text="${report.title}"></td>
-                                        <td class="align-middle"><a th:href="@{reports/{code}/(code=${report.id})}" class="btn btn-primary">詳細</a></td>
+                                            <td class="align-middle" th:text="${report.employee.name}"></td><!-- id="listValue1"-->
+                                            <td class="align-middle" th:text="${report.reportDate}"></td><!--  id="listValue2"-->
+                                            <td class="align-middle" th:text="${report.title}"></td><!--   id="listValue3"-->
+                                            <td class="align-middle"><a th:href="@{reports/{code}/(code=${report.id})}" class="btn btn-primary">詳細</a></td><!--    id="listValue4"-->
                                         </tr>
                                     </tbody>
                                 </table>
